@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    color: #383738;
+    background-color: #f7f9fb;
+  }
+}
+
+/* Authentic EasyBook Leaflet Map Marker */
+.easybook-map-marker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #18458b;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 12px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  border: 2px solid #3aaced;
+  transition: all 0.2s ease-in-out;
+  white-space: nowrap;
+}
+
+.easybook-map-marker:hover,
+.easybook-map-marker.active {
+  background: #fab702;
+  color: #111827;
+  border-color: #ffffff;
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(250, 183, 2, 0.4);
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}

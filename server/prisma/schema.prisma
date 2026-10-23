@@ -1,0 +1,277 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum EnquiryStatus {
+  NEW
+  CONTACTED
+  CONSULTATION_SCHEDULED
+  QUOTATION_SENT
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+model User {
+  id        String    @id @default(uuid())
+  email     String    @unique
+  name      String?
+  password  String?
+  role      String    @default("USER") // USER, ADMIN
+  otp                String?
+  otpExpiry          DateTime?
+  mustChangePassword Boolean   @default(true)
+  hasChangedPassword Boolean   @default(false)
+  lastLoginAt        DateTime?
+  reviews            Review[]
+  wishlists WishlistItem[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  slug        String    @unique
+  color       String    @default("blue") // blue, green, red, pink, orange
+  description String?
+  image       String?
+  projects    Project[]
+  createdAt   DateTime  @default(now())
+}
+
+model Project {
+  id            String         @id @default(uuid())
+  title         String
+  slug          String         @unique
+  tagline       String?
+  description   String
+  approxPrice   Float          // Approximate base cost
+  priceUnit     String         @default("Total Project Estimate")
+  areaSqFt      Int?
+  timeline      String?
+  materials     String?
+  address       String
+  city          String
+  state         String?
+  country       String         @default("India")
+  lat           Float          @default(12.9716)
+  lng           Float          @default(77.5946)
+  isFeatured    Boolean        @default(false)
+  categoryId    String
+  category      Category       @relation(fields: [categoryId], references: [id])
+  images        ProjectImage[]
+  enquiries     Enquiry[]
+  reviews       Review[]
+  wishlists     WishlistItem[]
+  likes         ProjectLike[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@index([categoryId])
+  @@index([city])
+  @@index([approxPrice])
+}
+
+model ProjectImage {
+  id        String   @id @default(uuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  url       String
+  caption   String?
+  isPrimary Boolean  @default(false)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userName  String
+  userEmail String
+  rating    Int      @default(5)
+  comment   String
+  createdAt DateTime @default(now())
+
+  @@index([projectId])
+}
+
+model Enquiry {
+  id             String        @id @default(uuid())
+  projectId      String?
+  project        Project?      @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  clientName     String
+  clientEmail    String
+  clientPhone    String
+  siteAddress    String
+  city           String
+  propertyType   String        @default("Residential Villa")
+  areaSqFt       Int?
+  approxBudget   String?
+  preferredStyle String?
+  message        String
+  status         EnquiryStatus @default(NEW)
+  internalNotes  String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+model CompanySetting {
+  id           String   @id @default("default")
+  companyName  String   @default("Veyra's Construction and Interiors")
+  tagline      String   @default("Building Spaces • Creating Lifestyles")
+  phone        String   @default("089213 36363")
+  whatsapp     String   @default("089213 36363")
+  email        String   @default("contact@veyrasinteriors.com")
+  address      String   @default("#98, 1Main , 4th Cross , Manjunatha Nagar, Rajainagar-560010, Bengaluru, Karnataka")
+  city         String   @default("Bengaluru")
+  workingHours String   @default("Mon - Sat: 9:00 AM - 7:30 PM")
+  logoUrl      String   @default("/assets/branding/veyras-logo.jpg")
+  updatedAt    DateTime @updatedAt
+}
+
+model SystemConfig {
+  id                  String   @id @default("default")
+  // Email SMTP Settings
+  smtpHost            String   @default("smtp.mailtrap.io")
+  smtpPort            Int      @default(587)
+  smtpUser            String   @default("veyras_smtp_user")
+  smtpPass            String   @default("veyras_smtp_pass_2026")
+  senderEmail         String   @default("orders@veyrasinteriors.com")
+  senderName          String   @default("Veyra's Construction & Interiors")
+  smtpSecure          Boolean  @default(true)
+  
+  // Payment Gateway Settings
+  paymentGateway      String   @default("Razorpay") // Razorpay, Stripe, Instamojo
+  paymentMode         String   @default("TEST") // TEST, LIVE
+  paymentApiKey       String   @default("rzp_test_99veyrasconstruction")
+  paymentApiSecret    String   @default("sec_veyras_pass_key_8892")
+  paymentCurrency     String   @default("INR")
+  enableOnlineAdvance Boolean  @default(true)
+
+  // SEO & Analytics Settings
+  seoTitle            String   @default("Veyra's Construction and Interiors | Turnkey Civil & Bespoke Design Bengaluru")
+  seoDescription      String   @default("Veyra's Construction and Interiors: Building Spaces • Creating Lifestyles. Turnkey architectural construction, luxury residential interiors, zen courtyards, and timber pergolas in Bengaluru.")
+  seoKeywords         String   @default("construction Bengaluru, interior design Rajajinagar, turnkey construction, zen courtyards, timber deck, villa renovation")
+  googleAnalyticsId   String   @default("G-VEYRAS2026")
+  canonicalUrl        String   @default("https://veyrasinteriors.com")
+  ogImage             String   @default("/assets/branding/veyras-logo.jpg")
+
+  updatedAt           DateTime @updatedAt
+}
+
+model WishlistItem {
+  id        String   @id @default(uuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userEmail String
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userEmail, projectId])
+  @@index([userEmail])
+  @@index([projectId])
+}
+
+model ProjectLike {
+  id        String   @id @default(uuid())
+  userEmail String
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userEmail, projectId])
+  @@index([userEmail])
+  @@index([projectId])
+}
+
+
+model NavMenu {
+  id          String       @id @default(uuid())
+  title       String
+  slug        String       @unique
+  icon        String?      @default("Layers")
+  order       Int          @default(0)
+  isActive    Boolean      @default(true)
+  submenus    NavSubmenu[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model NavSubmenu {
+  id          String       @id @default(uuid())
+  menuId      String
+  menu        NavMenu      @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  title       String
+  slug        String
+  description String?
+  order       Int          @default(0)
+  isActive    Boolean      @default(true)
+  services    Service[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@unique([menuId, slug])
+}
+
+model Service {
+  id             String      @id @default(uuid())
+  title          String
+  slug           String      @unique
+  subtitle       String?
+  description    String
+  pricePerSqFt   Float       // e.g. 1850.0
+  priceUnit      String      @default("per sq.ft")
+  minAreaSqFt    Int?        @default(500)
+  durationWeeks  Int?        @default(6)
+  category       String      @default("Interior Design")
+  imageUrl       String      @default("/assets/projects/project-patio.jpg")
+  galleryImages  String[]    @default([])
+  features       String[]    @default([])
+  enableEnquiry  Boolean     @default(true)
+  enableWhatsApp Boolean     @default(true)
+  isFeatured     Boolean     @default(true)
+  order          Int         @default(0)
+  submenuId      String?
+  submenu        NavSubmenu? @relation(fields: [submenuId], references: [id], onDelete: SetNull)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  @@index([category])
+  @@index([pricePerSqFt])
+}
+
+model SocialMediaPost {
+  id            String    @id @default(uuid())
+  platform      String    // "Instagram", "Facebook", "Pinterest", "YouTube"
+  postUrl       String?
+  caption       String
+  mediaUrl      String?
+  likesCount    Int       @default(0)
+  commentsCount Int       @default(0)
+  sharesCount   Int       @default(0)
+  sentiment     String?   @default("POSITIVE") // "POSITIVE", "NEUTRAL", "INQUIRY", "NEGATIVE"
+  topComment    String?
+  postedAt      DateTime  @default(now())
+  createdAt     DateTime  @default(now())
+}
+
+model AiAnalysisLog {
+  id             String   @id @default(uuid())
+  modelName      String   @default("llama3.2:3b")
+  ollamaEndpoint String   @default("http://localhost:11434")
+  analysisType   String   // "SOCIAL_TRENDS", "SENTIMENT_AUDIT", "MARKETING_RECOMMENDATIONS", "LEAD_INTENT"
+  prompt         String
+  response       String   // Analysis generated by Ollama LLM
+  metrics        String?  // JSON stringified stats
+  createdAt      DateTime @default(now())
+}
