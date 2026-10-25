@@ -96,14 +96,31 @@ export interface DashboardStats {
   activeSites: number;
 }
 
+export type UserRole = "ADMIN" | "MANAGER" | "ARCHITECT" | "EDITOR" | "USER";
+
 export interface AuthUser {
   id: string;
   email: string;
   name: string;
-  role: "USER" | "ADMIN";
+  phone?: string;
+  role: UserRole | string;
+  title?: string;
+  department?: string;
+  bio?: string;
+  avatarUrl?: string;
+  status?: "ACTIVE" | "SUSPENDED" | string;
+  permissions?: string[];
+  twoFactorEnabled?: boolean;
   hasPassword?: boolean;
   mustChangePassword?: boolean;
+  hasChangedPassword?: boolean;
   isFirstLogin?: boolean;
+  lastLoginAt?: string;
+  createdAt?: string;
+  reviewsCount?: number;
+  wishlistCount?: number;
+  likesCount?: number;
+  enquiriesCount?: number;
 }
 
 export interface Review {
@@ -128,6 +145,7 @@ export interface SystemConfig {
   senderEmail: string;
   senderName: string;
   smtpSecure: boolean;
+  otpExpirySeconds?: number;
   // Payment Gateway
   paymentGateway: string;
   paymentMode: string;
@@ -142,9 +160,50 @@ export interface SystemConfig {
   googleAnalyticsId: string;
   canonicalUrl: string;
   ogImage: string;
+  // WhatsApp Business Cloud API
+  whatsappProvider?: string;
+  whatsappBusinessNumber?: string;
+  whatsappPhoneNumberId?: string;
+  whatsappBusinessAccountId?: string;
+  whatsappAccessToken?: string;
+  whatsappWebhookToken?: string;
+  whatsappWelcomeTemplate?: string;
+  whatsappAutoReply?: boolean;
+  enableFloatingWhatsApp?: boolean;
+  // API Keys & Integrations (Ollama, Meta, Maps, Cloud)
+  ollamaEndpoint?: string;
+  ollamaDefaultModel?: string;
+  ollamaTemperature?: number;
+  metaAppId?: string;
+  metaAppSecret?: string;
+  metaAccessToken?: string;
+  metaAdAccountId?: string;
+  metaPixelId?: string;
+  instagramAccountId?: string;
+  googleMapsApiKey?: string;
+  cloudinaryApiKey?: string;
+  // Frontend CMS & UI Controls
+  announcementText?: string;
+  showAnnouncementBar?: boolean;
+  heroBadgeText?: string;
+  heroTitle?: string;
+  heroHighlightText?: string;
+  heroSubtitle?: string;
+  heroBgImage?: string;
+  showHeroEstimator?: boolean;
+  showCategoryShowcase?: boolean;
+  showQualitySection?: boolean;
+  showTestimonials?: boolean;
+  rateCourtyard?: number;
+  rateConstruction?: number;
+  rateInteriors?: number;
+  rateDecks?: number;
+  rateRenovation?: number;
+  instagramUrl?: string;
+  facebookUrl?: string;
+  youtubeUrl?: string;
   updatedAt?: string;
 }
-
 
 export interface Service {
   id: string;
@@ -229,4 +288,103 @@ export interface AiAnalysisResponse {
   modelUsed: string;
   logId?: string;
   timestamp: string;
+}
+
+export interface AiAnalysisLog {
+  id: string;
+  modelName: string;
+  ollamaEndpoint: string;
+  analysisType: string;
+  prompt: string;
+  response: string;
+  metrics?: string;
+  createdAt: string;
+}
+
+export interface AdCampaign {
+  id: string;
+  name: string;
+  platform: string;
+  placement: string;
+  objective: string;
+  status: "ACTIVE" | "PAUSED" | "COMPLETED" | "DRAFT" | string;
+  dailyBudget: number;
+  totalBudget: number;
+  spentAmount: number;
+  targetAudience: string;
+  targetLocations: string;
+  headline: string;
+  primaryText: string;
+  ctaText: string;
+  destinationUrl: string;
+  mediaUrl: string;
+  targetService?: string;
+  impressions: number;
+  clicks: number;
+  leadsCount: number;
+  conversionsCount: number;
+  roas: number;
+  aiOptimized: boolean;
+  startDate: string;
+  endDate?: string;
+  createdAt: string;
+}
+
+export interface AdCampaignSummary {
+  totalCampaigns: number;
+  activeCampaigns: number;
+  totalBudget: number;
+  totalSpent: number;
+  totalImpressions: number;
+  totalClicks: number;
+  totalLeads: number;
+  totalConversions: number;
+  avgRoas: number;
+}
+
+export interface ExecutiveReportSummary {
+  kpis: {
+    totalProjects: number;
+    totalServices: number;
+    totalEnquiries: number;
+    totalUsers: number;
+    totalReviews: number;
+    totalWishlists: number;
+    totalLikes: number;
+    avgRating: number;
+    portfolioValue: number;
+    activePipelineValue: number;
+    completedRevenueValue: number;
+    conversionRatePct: number;
+  };
+  pipelineByStatus: Array<{
+    status: string;
+    count: number;
+    percentage: number;
+    estimatedValue: number;
+  }>;
+  categoryPerformance: Array<{
+    id: string;
+    name: string;
+    color: string;
+    projectsCount: number;
+    enquiriesCount: number;
+    likesCount: number;
+    wishlistsCount: number;
+    avgPrice: number;
+  }>;
+  cityBreakdown: Array<{
+    city: string;
+    enquiries: number;
+    projects: number;
+  }>;
+  adPerformance: {
+    totalCampaigns: number;
+    totalSpent: number;
+    totalLeads: number;
+    totalImpressions: number;
+    totalClicks: number;
+    avgRoas: number;
+  };
+  recentAiLogs: AiAnalysisLog[];
 }

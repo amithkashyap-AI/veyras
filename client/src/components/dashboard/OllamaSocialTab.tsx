@@ -151,7 +151,7 @@ export const OllamaSocialTab: React.FC = () => {
           
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
                 <Cpu className="w-3.5 h-3.5" />
                 {ollamaStatus && ollamaStatus.connected ? "Ollama Local LLM Active" : "Ollama Connected (localhost:11434)"}
               </span>
@@ -172,7 +172,7 @@ export const OllamaSocialTab: React.FC = () => {
           {/* Model Selector & Action Controls */}
           <div className="bg-white/10 p-3.5 rounded-lg border border-white/15 w-full md:w-auto shrink-0 flex flex-col gap-2.5">
             <div className="flex items-center justify-between gap-3">
-              <label className="text-[11px] font-bold uppercase text-slate-300 flex items-center gap-1">
+              <label className="text-sm font-bold uppercase text-slate-300 flex items-center gap-1">
                 <Sparkles className="w-3.5 h-3.5 text-[#f97316]" /> Active LLM Model:
               </label>
               <select
@@ -226,38 +226,38 @@ export const OllamaSocialTab: React.FC = () => {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white p-4 rounded-lg border border-slate-200 shadow-xs">
           <div className="flex items-center justify-between text-slate-500 mb-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider">Total Likes</span>
+            <span className="text-xs font-bold uppercase tracking-wider">Total Likes</span>
             <Heart className="w-4 h-4 text-red-500 fill-red-500" />
           </div>
           <div className="text-2xl font-black text-slate-900">{totalLikes.toLocaleString()}</div>
-          <p className="text-[10px] text-emerald-600 font-bold mt-1">↑ 18.4% this month</p>
+          <p className="text-xs text-emerald-600 font-bold mt-1">↑ 18.4% this month</p>
         </div>
 
         <div className="bg-white p-4 rounded-lg border border-slate-200 shadow-xs">
           <div className="flex items-center justify-between text-slate-500 mb-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider">Comments & Inquiries</span>
+            <span className="text-xs font-bold uppercase tracking-wider">Comments & Inquiries</span>
             <MessageCircle className="w-4 h-4 text-blue-500" />
           </div>
           <div className="text-2xl font-black text-slate-900">{totalComments}</div>
-          <p className="text-[10px] text-slate-400 mt-1">82% asking about sq.ft rates</p>
+          <p className="text-xs text-slate-400 mt-1">82% asking about sq.ft rates</p>
         </div>
 
         <div className="bg-white p-4 rounded-lg border border-slate-200 shadow-xs">
           <div className="flex items-center justify-between text-slate-500 mb-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider">Shares & Bookmarks</span>
+            <span className="text-xs font-bold uppercase tracking-wider">Shares & Bookmarks</span>
             <Share2 className="w-4 h-4 text-[#ea580c]" />
           </div>
           <div className="text-2xl font-black text-slate-900">{totalShares}</div>
-          <p className="text-[10px] text-[#ea580c] font-bold mt-1">Viral courtyard reels</p>
+          <p className="text-xs text-[#ea580c] font-bold mt-1">Viral courtyard reels</p>
         </div>
 
         <div className="bg-white p-4 rounded-lg border border-slate-200 shadow-xs">
           <div className="flex items-center justify-between text-slate-500 mb-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider">Audience Sentiment</span>
+            <span className="text-xs font-bold uppercase tracking-wider">Audience Sentiment</span>
             <TrendingUp className="w-4 h-4 text-emerald-600" />
           </div>
           <div className="text-2xl font-black text-emerald-600">93.4% Positive</div>
-          <p className="text-[10px] text-slate-400 mt-1">High conversion potential</p>
+          <p className="text-xs text-slate-400 mt-1">High conversion potential</p>
         </div>
       </div>
 
@@ -293,7 +293,7 @@ export const OllamaSocialTab: React.FC = () => {
               <div className="flex-1 flex flex-col justify-between">
                 <div>
                   <div className="flex items-center justify-between gap-2 mb-1">
-                    <span className={"inline-flex items-center gap-1 text-[10px] font-black uppercase px-2 py-0.5 rounded-xs " + (
+                    <span className={"inline-flex items-center gap-1 text-xs font-black uppercase px-2 py-0.5 rounded-xs " + (
                       post.platform === "Instagram" 
                         ? "bg-pink-100 text-pink-700" 
                         : "bg-blue-100 text-blue-700"
@@ -301,7 +301,7 @@ export const OllamaSocialTab: React.FC = () => {
                       {post.platform === "Instagram" ? <Instagram className="w-3 h-3" /> : <Facebook className="w-3 h-3" />}
                       {post.platform}
                     </span>
-                    <span className="text-[10px] font-bold text-slate-400">
+                    <span className="text-xs font-bold text-slate-400">
                       {new Date(post.postedAt).toLocaleDateString()}
                     </span>
                   </div>
@@ -312,7 +312,7 @@ export const OllamaSocialTab: React.FC = () => {
                 </div>
 
                 {post.topComment && (
-                  <div className="mt-2 text-[11px] bg-white p-2 rounded-xs border border-slate-200 text-slate-600">
+                  <div className="mt-2 text-sm bg-white p-2 rounded-xs border border-slate-200 text-slate-600">
                     <strong className="text-slate-800">Top Comment:</strong> \"{post.topComment}\"
                   </div>
                 )}
@@ -348,7 +348,7 @@ export const OllamaSocialTab: React.FC = () => {
           </div>
 
           {analysisTimestamp && (
-            <span className="text-[10px] bg-blue-50 text-[#1e3a8a] px-2.5 py-1 rounded-sm font-bold border border-blue-200">
+            <span className="text-xs bg-blue-50 text-[#1e3a8a] px-2.5 py-1 rounded-sm font-bold border border-blue-200">
               Generated at {analysisTimestamp}
             </span>
           )}
@@ -395,32 +395,32 @@ export const OllamaSocialTab: React.FC = () => {
               Live consultation with {selectedModel}. Ask questions about customer price objections, social campaigns, or package copywriting.
             </p>
           </div>
-          <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-xs">
+          <span className="text-xs text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-xs">
             Live LLM Response
           </span>
         </div>
 
         {/* Quick prompt suggestion chips */}
         <div className="flex flex-wrap items-center gap-1.5 mb-3">
-          <span className="text-[10px] font-bold uppercase text-slate-400 mr-1">Quick Prompts:</span>
+          <span className="text-xs font-bold uppercase text-slate-400 mr-1">Quick Prompts:</span>
           <button
             type="button"
             onClick={() => handleSendChat("Draft an Instagram Reel script showcasing our Rs. 1,850/sq.ft luxury interior package in Rajajinagar")}
-            className="text-[11px] bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1 rounded-xs transition-colors cursor-pointer"
+            className="text-sm bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1 rounded-xs transition-colors cursor-pointer"
           >
             📸 Reel script for Rs. 1,850/sq.ft
           </button>
           <button
             type="button"
             onClick={() => handleSendChat("What are customer objections regarding price per square foot and how can our sales team resolve them?")}
-            className="text-[11px] bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1 rounded-xs transition-colors cursor-pointer"
+            className="text-sm bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1 rounded-xs transition-colors cursor-pointer"
           >
             💰 Overcoming price per sq.ft objections
           </button>
           <button
             type="button"
             onClick={() => handleSendChat("Draft 3 high-converting WhatsApp broadcast messages for villa owners in Sadashivanagar")}
-            className="text-[11px] bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1 rounded-xs transition-colors cursor-pointer"
+            className="text-sm bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1 rounded-xs transition-colors cursor-pointer"
           >
             💬 WhatsApp broadcast templates
           </button>
@@ -440,7 +440,7 @@ export const OllamaSocialTab: React.FC = () => {
               )}>
                 {msg.text}
               </div>
-              <span className="text-[9px] text-slate-400 mt-0.5 px-1 font-mono">
+              <span className="text-xs text-slate-400 mt-0.5 px-1 font-mono">
                 {msg.sender === "user" ? "You" : selectedModel} • {msg.time}
               </span>
             </div>

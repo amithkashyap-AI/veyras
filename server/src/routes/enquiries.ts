@@ -50,7 +50,7 @@ enquiriesRouter.post('/', async (req, res) => {
         clientEmail: clientEmail || 'client@example.com',
         clientPhone,
         siteAddress: siteAddress || 'Site Address Pending',
-        city: city || 'Hyderabad',
+        city: city || 'Bengaluru',
         propertyType: propertyType || 'Residential Villa',
         areaSqFt: areaSqFt ? parseInt(areaSqFt, 10) : undefined,
         approxBudget: approxBudget || 'Consultation Required',

@@ -221,7 +221,7 @@ servicesRouter.delete("/:id", async (req, res): Promise<any> => {
 // ==========================================
 
 // GET /api/menus (List menus with submenus and counts)
-menusRouter.get("/", async (req, res): Promise<any> => {
+menusRouter.get("/", async (_req, res): Promise<any> => {
   try {
     const menus = await prisma.navMenu.findMany({
       orderBy: { order: "asc" },
@@ -280,9 +280,9 @@ menusRouter.put("/:id", async (req, res): Promise<any> => {
     const updated = await prisma.navMenu.update({
       where: { id },
       data: {
-        ...(title && { title }),
-        ...(icon && { icon }),
-        ...(order !== undefined && { order: parseInt(String(order)) }),
+        ...(title !== undefined && { title }),
+        ...(icon !== undefined && { icon }),
+        ...(order !== undefined && { order: parseInt(String(order), 10) || 0 }),
         ...(isActive !== undefined && { isActive: Boolean(isActive) })
       },
       include: {
@@ -335,6 +335,27 @@ menusRouter.post("/:menuId/submenus", async (req, res): Promise<any> => {
   } catch (error: any) {
     console.error("Error creating submenu:", error);
     return res.status(500).json({ success: false, error: error.message || "Failed to create submenu" });
+  }
+});
+
+// PUT /api/menus/submenus/:id (Update Submenu)
+menusRouter.put("/submenus/:id", async (req, res): Promise<any> => {
+  try {
+    const { id } = req.params;
+    const { title, description, order, isActive } = req.body;
+    const updated = await prisma.navSubmenu.update({
+      where: { id },
+      data: {
+        ...(title !== undefined && { title }),
+        ...(description !== undefined && { description }),
+        ...(order !== undefined && { order: parseInt(String(order), 10) || 0 }),
+        ...(isActive !== undefined && { isActive: Boolean(isActive) })
+      }
+    });
+    return res.json({ success: true, message: "Submenu updated", data: updated });
+  } catch (error: any) {
+    console.error("Error updating submenu:", error);
+    return res.status(500).json({ success: false, error: "Failed to update submenu" });
   }
 });
 

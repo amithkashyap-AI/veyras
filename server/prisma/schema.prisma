@@ -18,20 +18,28 @@ enum EnquiryStatus {
 }
 
 model User {
-  id        String    @id @default(uuid())
-  email     String    @unique
-  name      String?
-  password  String?
-  role      String    @default("USER") // USER, ADMIN
+  id                 String         @id @default(uuid())
+  email              String         @unique
+  name               String?
+  phone              String?
+  password           String?
+  role               String         @default("USER") // ADMIN, MANAGER, ARCHITECT, EDITOR, USER
+  title              String?        @default("Client")
+  department         String?        @default("General")
+  avatarUrl          String?
+  bio                String?
+  status             String         @default("ACTIVE") // ACTIVE, SUSPENDED
+  permissions        String[]       @default([])
+  twoFactorEnabled   Boolean        @default(true)
   otp                String?
   otpExpiry          DateTime?
-  mustChangePassword Boolean   @default(true)
-  hasChangedPassword Boolean   @default(false)
+  mustChangePassword Boolean        @default(true)
+  hasChangedPassword Boolean        @default(false)
   lastLoginAt        DateTime?
   reviews            Review[]
-  wishlists WishlistItem[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  wishlists          WishlistItem[]
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
 }
 
 model Category {
@@ -131,7 +139,7 @@ model CompanySetting {
   phone        String   @default("089213 36363")
   whatsapp     String   @default("089213 36363")
   email        String   @default("contact@veyrasinteriors.com")
-  address      String   @default("#98, 1Main , 4th Cross , Manjunatha Nagar, Rajainagar-560010, Bengaluru, Karnataka")
+  address      String   @default("#98, 1st Main, 4th Cross, Manjunatha Nagar, Rajajinagar, Bengaluru - 560010")
   city         String   @default("Bengaluru")
   workingHours String   @default("Mon - Sat: 9:00 AM - 7:30 PM")
   logoUrl      String   @default("/assets/branding/veyras-logo.jpg")
@@ -139,33 +147,79 @@ model CompanySetting {
 }
 
 model SystemConfig {
-  id                  String   @id @default("default")
+  id                        String   @id @default("default")
   // Email SMTP Settings
-  smtpHost            String   @default("smtp.mailtrap.io")
-  smtpPort            Int      @default(587)
-  smtpUser            String   @default("veyras_smtp_user")
-  smtpPass            String   @default("veyras_smtp_pass_2026")
-  senderEmail         String   @default("orders@veyrasinteriors.com")
-  senderName          String   @default("Veyra's Construction & Interiors")
-  smtpSecure          Boolean  @default(true)
-  
+  smtpHost                  String   @default("smtp.mailtrap.io")
+  smtpPort                  Int      @default(587)
+  smtpUser                  String   @default("veyras_smtp_user")
+  smtpPass                  String   @default("veyras_smtp_pass_2026")
+  senderEmail               String   @default("orders@veyrasinteriors.com")
+  senderName                String   @default("Veyra's Construction & Interiors")
+  smtpSecure                Boolean  @default(true)
+  otpExpirySeconds          Int      @default(600)
+
   // Payment Gateway Settings
-  paymentGateway      String   @default("Razorpay") // Razorpay, Stripe, Instamojo
-  paymentMode         String   @default("TEST") // TEST, LIVE
-  paymentApiKey       String   @default("rzp_test_99veyrasconstruction")
-  paymentApiSecret    String   @default("sec_veyras_pass_key_8892")
-  paymentCurrency     String   @default("INR")
-  enableOnlineAdvance Boolean  @default(true)
+  paymentGateway            String   @default("Razorpay") // Razorpay, Stripe, Instamojo
+  paymentMode               String   @default("TEST") // TEST, LIVE
+  paymentApiKey             String   @default("rzp_test_99veyrasconstruction")
+  paymentApiSecret          String   @default("sec_veyras_pass_key_8892")
+  paymentCurrency           String   @default("INR")
+  enableOnlineAdvance       Boolean  @default(true)
 
   // SEO & Analytics Settings
-  seoTitle            String   @default("Veyra's Construction and Interiors | Turnkey Civil & Bespoke Design Bengaluru")
-  seoDescription      String   @default("Veyra's Construction and Interiors: Building Spaces • Creating Lifestyles. Turnkey architectural construction, luxury residential interiors, zen courtyards, and timber pergolas in Bengaluru.")
-  seoKeywords         String   @default("construction Bengaluru, interior design Rajajinagar, turnkey construction, zen courtyards, timber deck, villa renovation")
-  googleAnalyticsId   String   @default("G-VEYRAS2026")
-  canonicalUrl        String   @default("https://veyrasinteriors.com")
-  ogImage             String   @default("/assets/branding/veyras-logo.jpg")
+  seoTitle                  String   @default("Veyra's Construction and Interiors | Turnkey Civil & Bespoke Design Bengaluru")
+  seoDescription            String   @default("Veyra's Construction and Interiors: Building Spaces • Creating Lifestyles. Turnkey architectural construction, luxury residential interiors, zen courtyards, and timber pergolas in Bengaluru.")
+  seoKeywords               String   @default("construction Bengaluru, interior design Rajajinagar, turnkey construction, zen courtyards, timber deck, villa renovation")
+  googleAnalyticsId         String   @default("G-VEYRAS2026")
+  canonicalUrl              String   @default("https://veyrasinteriors.com")
+  ogImage                   String   @default("/assets/branding/veyras-logo.jpg")
 
-  updatedAt           DateTime @updatedAt
+  // WhatsApp Business Cloud API & Chat Configuration
+  whatsappProvider          String   @default("Meta WhatsApp Cloud API")
+  whatsappBusinessNumber    String   @default("918921336363")
+  whatsappPhoneNumberId     String   @default("109283746510293")
+  whatsappBusinessAccountId String   @default("987654321098765")
+  whatsappAccessToken       String   @default("EAAGm0PX4ZCpsBAKZ_veyras_wa_cloud_token_2026")
+  whatsappWebhookToken      String   @default("veyras_wa_verify_2026")
+  whatsappWelcomeTemplate   String   @default("Namaste from Veyra's Construction & Interiors! Thank you for reaching out. Our Principal Architect will review your requirements and connect with you shortly.")
+  whatsappAutoReply         Boolean  @default(true)
+  enableFloatingWhatsApp    Boolean  @default(true)
+
+  // API Keys & External Integrations (Ollama, Meta Ads, Maps, Cloud)
+  ollamaEndpoint            String   @default("http://localhost:11434")
+  ollamaDefaultModel        String   @default("llama3.2:3b")
+  ollamaTemperature         Float    @default(0.7)
+  metaAppId                 String   @default("148293049582104")
+  metaAppSecret             String   @default("meta_sec_veyras_99201")
+  metaAccessToken           String   @default("EAABsbCS1iHgBO89VeyrasAdsToken2026")
+  metaAdAccountId           String   @default("act_8839201948")
+  metaPixelId               String   @default("948372615049382")
+  instagramAccountId        String   @default("17841405829301928")
+  googleMapsApiKey          String   @default("AIzaSyVeyrasBengaluruMapsKey2026")
+  cloudinaryApiKey          String   @default("cld_veyras_media_88392")
+
+  // Frontend CMS & Live UI Controls
+  announcementText          String   @default("✨ Complimentary 3D Architectural Concept & On-Site Consultation in Bengaluru — Call/WhatsApp 089213 36363")
+  showAnnouncementBar       Boolean  @default(true)
+  heroBadgeText             String   @default("Veyra's Construction & Interiors")
+  heroTitle                 String   @default("Building Spaces •")
+  heroHighlightText         String   @default("Creating Lifestyles")
+  heroSubtitle              String   @default("From turnkey civil structural construction to bespoke modern courtyards, reflection pools, and high-end residential interiors.")
+  heroBgImage               String   @default("/assets/projects/project-zen-courtyard.jpg")
+  showHeroEstimator         Boolean  @default(true)
+  showCategoryShowcase      Boolean  @default(true)
+  showQualitySection        Boolean  @default(true)
+  showTestimonials          Boolean  @default(true)
+  rateCourtyard             Float    @default(650)
+  rateConstruction          Float    @default(2400)
+  rateInteriors             Float    @default(1850)
+  rateDecks                 Float    @default(750)
+  rateRenovation            Float    @default(1100)
+  instagramUrl              String   @default("https://instagram.com/veyrasinteriors")
+  facebookUrl               String   @default("https://facebook.com/veyrasinteriors")
+  youtubeUrl                String   @default("https://youtube.com/@veyrasinteriors")
+
+  updatedAt                 DateTime @updatedAt
 }
 
 model WishlistItem {
@@ -193,7 +247,6 @@ model ProjectLike {
   @@index([userEmail])
   @@index([projectId])
 }
-
 
 model NavMenu {
   id          String       @id @default(uuid())
@@ -269,9 +322,39 @@ model AiAnalysisLog {
   id             String   @id @default(uuid())
   modelName      String   @default("llama3.2:3b")
   ollamaEndpoint String   @default("http://localhost:11434")
-  analysisType   String   // "SOCIAL_TRENDS", "SENTIMENT_AUDIT", "MARKETING_RECOMMENDATIONS", "LEAD_INTENT"
+  analysisType   String   // "SOCIAL_TRENDS", "EXECUTIVE_REPORT", "USER_BEHAVIOR", "AD_CAMPAIGN_COPY"
   prompt         String
   response       String   // Analysis generated by Ollama LLM
   metrics        String?  // JSON stringified stats
   createdAt      DateTime @default(now())
+}
+
+model AdCampaign {
+  id               String    @id @default(uuid())
+  name             String
+  platform         String    @default("Instagram & Facebook") // "Instagram", "Facebook", "Instagram & Facebook", "WhatsApp Click-to-Chat"
+  placement        String    @default("Instagram Reels & Feed")
+  objective        String    @default("LEAD_GENERATION") // "LEAD_GENERATION", "WHATSAPP_MESSAGES", "WEBSITE_TRAFFIC", "BRAND_AWARENESS"
+  status           String    @default("ACTIVE") // "ACTIVE", "PAUSED", "COMPLETED", "DRAFT"
+  dailyBudget      Float     @default(1500)
+  totalBudget      Float     @default(45000)
+  spentAmount      Float     @default(12400)
+  targetAudience   String    @default("Bengaluru Villa & Luxury Apartment Owners (28-58 yrs) — Rajajinagar, Sadashivanagar, Indiranagar, Whitefield")
+  targetLocations  String    @default("Bengaluru, Karnataka (+25 km radius)")
+  headline         String
+  primaryText      String
+  ctaText          String    @default("Send WhatsApp Message")
+  destinationUrl   String    @default("https://wa.me/918921336363")
+  mediaUrl         String    @default("/assets/projects/project-zen-courtyard.jpg")
+  targetService    String?   @default("Luxury Interior Design (₹1,850/sq.ft)")
+  impressions      Int       @default(18450)
+  clicks           Int       @default(642)
+  leadsCount       Int       @default(28)
+  conversionsCount Int       @default(6)
+  roas             Float     @default(4.8)
+  aiOptimized      Boolean   @default(true)
+  startDate        DateTime  @default(now())
+  endDate          DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 }

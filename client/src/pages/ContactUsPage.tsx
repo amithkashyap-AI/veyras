@@ -14,7 +14,7 @@ export const ContactUsPage: React.FC<ContactUsPageProps> = ({ company, currentUs
   const phone = company?.phone || '089213 36363';
   const whatsapp = company?.whatsapp || '089213 36363';
   const email = company?.email || 'contact@veyrasinteriors.com';
-  const address = company?.address || '#98, 1Main , 4th Cross , Manjunatha Nagar, Rajainagar-560010, Bengaluru, Karnataka';
+  const address = company?.address || '#98, 1st Main, 4th Cross, Manjunatha Nagar, Rajajinagar, Bengaluru - 560010';
 
   const [name, setName] = useState('');
   const [clientPhone, setClientPhone] = useState('');

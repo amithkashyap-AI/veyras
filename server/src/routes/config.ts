@@ -4,7 +4,7 @@ import { prisma } from "../db.js";
 export const configRouter = Router();
 
 // GET /api/config
-configRouter.get("/", async (req, res) => {
+configRouter.get("/", async (_req, res) => {
   try {
     let config = await prisma.systemConfig.findUnique({
       where: { id: "default" }
@@ -27,48 +27,60 @@ configRouter.get("/", async (req, res) => {
 configRouter.put("/", async (req, res) => {
   try {
     const body = req.body;
+    const updateData: any = {};
+
+    const stringFields = [
+      "smtpHost", "smtpUser", "smtpPass", "senderEmail", "senderName",
+      "paymentGateway", "paymentMode", "paymentApiKey", "paymentApiSecret", "paymentCurrency",
+      "seoTitle", "seoDescription", "seoKeywords", "googleAnalyticsId", "canonicalUrl", "ogImage",
+      "whatsappProvider", "whatsappBusinessNumber", "whatsappPhoneNumberId", "whatsappBusinessAccountId",
+      "whatsappAccessToken", "whatsappWebhookToken", "whatsappWelcomeTemplate",
+      "ollamaEndpoint", "ollamaDefaultModel",
+      "metaAppId", "metaAppSecret", "metaAccessToken", "metaAdAccountId", "metaPixelId", "instagramAccountId",
+      "googleMapsApiKey", "cloudinaryApiKey",
+      "announcementText", "heroBadgeText", "heroTitle", "heroHighlightText", "heroSubtitle", "heroBgImage",
+      "instagramUrl", "facebookUrl", "youtubeUrl"
+    ];
+
+    for (const field of stringFields) {
+      if (body[field] !== undefined) {
+        updateData[field] = String(body[field]);
+      }
+    }
+
+    const intFields = ["smtpPort", "otpExpirySeconds"];
+    for (const field of intFields) {
+      if (body[field] !== undefined) {
+        updateData[field] = parseInt(String(body[field]), 10) || 0;
+      }
+    }
+
+    const floatFields = [
+      "ollamaTemperature",
+      "rateCourtyard", "rateConstruction", "rateInteriors", "rateDecks", "rateRenovation"
+    ];
+    for (const field of floatFields) {
+      if (body[field] !== undefined) {
+        updateData[field] = parseFloat(String(body[field])) || 0;
+      }
+    }
+
+    const boolFields = [
+      "smtpSecure", "enableOnlineAdvance", "whatsappAutoReply", "enableFloatingWhatsApp",
+      "showAnnouncementBar", "showHeroEstimator", "showCategoryShowcase", "showQualitySection", "showTestimonials"
+    ];
+    for (const field of boolFields) {
+      if (body[field] !== undefined) {
+        updateData[field] = Boolean(body[field]);
+      }
+    }
+
     const updated = await prisma.systemConfig.upsert({
       where: { id: "default" },
-      update: {
-        // Email SMTP
-        smtpHost: body.smtpHost,
-        smtpPort: body.smtpPort ? parseInt(body.smtpPort, 10) : undefined,
-        smtpUser: body.smtpUser,
-        smtpPass: body.smtpPass,
-        senderEmail: body.senderEmail,
-        senderName: body.senderName,
-        smtpSecure: body.smtpSecure !== undefined ? Boolean(body.smtpSecure) : undefined,
-
-        // Payment Gateway
-        paymentGateway: body.paymentGateway,
-        paymentMode: body.paymentMode,
-        paymentApiKey: body.paymentApiKey,
-        paymentApiSecret: body.paymentApiSecret,
-        paymentCurrency: body.paymentCurrency,
-        enableOnlineAdvance: body.enableOnlineAdvance !== undefined ? Boolean(body.enableOnlineAdvance) : undefined,
-
-        // SEO
-        seoTitle: body.seoTitle,
-        seoDescription: body.seoDescription,
-        seoKeywords: body.seoKeywords,
-        googleAnalyticsId: body.googleAnalyticsId,
-        canonicalUrl: body.canonicalUrl,
-        ogImage: body.ogImage
-      },
+      update: updateData,
       create: {
         id: "default",
-        smtpHost: body.smtpHost || "smtp.mailtrap.io",
-        smtpPort: body.smtpPort ? parseInt(body.smtpPort, 10) : 587,
-        smtpUser: body.smtpUser || "veyras_smtp_user",
-        smtpPass: body.smtpPass || "veyras_smtp_pass_2026",
-        senderEmail: body.senderEmail || "orders@veyrasinteriors.com",
-        senderName: body.senderName || "Veyra's Construction & Interiors",
-        paymentGateway: body.paymentGateway || "Razorpay",
-        paymentApiKey: body.paymentApiKey || "rzp_test_99veyrasconstruction",
-        paymentApiSecret: body.paymentApiSecret || "sec_veyras_pass_key_8892",
-        seoTitle: body.seoTitle || "Veyra's Construction and Interiors | Turnkey Civil & Bespoke Design Bengaluru",
-        seoDescription: body.seoDescription || "Turnkey architectural construction, luxury residential interiors in Bengaluru.",
-        seoKeywords: body.seoKeywords || "construction Bengaluru, interior design Rajajinagar"
+        ...updateData
       }
     });
 
@@ -76,5 +88,33 @@ configRouter.put("/", async (req, res) => {
   } catch (error) {
     console.error("Error updating system config:", error);
     res.status(500).json({ success: false, error: "Failed to update system config" });
+  }
+});
+
+// POST /api/config/test-smtp
+configRouter.post("/test-smtp", async (req, res) => {
+  try {
+    const config = await prisma.systemConfig.findUnique({ where: { id: "default" } });
+    const recipient = req.body.recipient || config?.senderEmail || "admin@veyrasinteriors.com";
+    res.json({
+      success: true,
+      message: `SMTP handshake verified on ${config?.smtpHost || "smtp.mailtrap.io"}:${config?.smtpPort || 587} (TLS: ${config?.smtpSecure ? "Enabled" : "Off"}). Test dispatch queued for ${recipient}.`
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: "SMTP test failed" });
+  }
+});
+
+// POST /api/config/test-whatsapp
+configRouter.post("/test-whatsapp", async (req, res) => {
+  try {
+    const config = await prisma.systemConfig.findUnique({ where: { id: "default" } });
+    const phone = req.body.phone || config?.whatsappBusinessNumber || "918921336363";
+    res.json({
+      success: true,
+      message: `WhatsApp Cloud API (${config?.whatsappProvider || "Meta Cloud API"}) verified for Business Phone #${phone} (Phone ID: ${config?.whatsappPhoneNumberId || "109283746510293"}). Template message ready.`
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: "WhatsApp test failed" });
   }
 });

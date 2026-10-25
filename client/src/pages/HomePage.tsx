@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { HeroBanner } from '../components/home/HeroBanner';
 import { CategoryShowcase } from '../components/home/CategoryShowcase';
 import { ProjectCard } from '../components/projects/ProjectCard';
-import { Category, Project, CompanySetting } from '../types';
-import { ShieldCheck, Award, Ruler, CheckCircle, ArrowRight, MessageCircle } from 'lucide-react';
+import { Category, Project, CompanySetting, SystemConfig } from '../types';
+import { ShieldCheck, Award, Ruler, CheckCircle, MessageCircle, Sparkles } from 'lucide-react';
+import { api } from '../services/api';
 
 interface HomePageProps {
   categories: Category[];
@@ -30,23 +31,54 @@ export const HomePage: React.FC<HomePageProps> = ({
   onToggleWishlist,
   onToggleLike
 }) => {
-  const whatsapp = company?.whatsapp || '089213 36363';
+  const [config, setConfig] = useState<SystemConfig | null>(null);
+
+  useEffect(() => {
+    api.getConfig().then(setConfig).catch(() => {});
+  }, []);
+
+  const whatsapp = config?.whatsappBusinessNumber || company?.whatsapp || '089213 36363';
+  const showAnnouncement = config?.showAnnouncementBar ?? true;
+  const announcementText = config?.announcementText || '✨ Complimentary 3D Architectural Concept & On-Site Consultation in Bengaluru — Call/WhatsApp 089213 36363';
+  const showCategoryShowcase = config?.showCategoryShowcase ?? true;
+  const showQualitySection = config?.showQualitySection ?? true;
 
   return (
     <div className="space-y-16 pb-20 bg-slate-50">
-      
-      {/* Hero Banner with Dynamic Cost Estimator */}
-      <HeroBanner 
-        categories={categories}
-        onOpenEnquiry={onOpenEnquiry}
-        onExplore={onExplore}
-      />
+      {/* Live Admin-Controlled Promo Announcement Banner */}
+      {showAnnouncement && announcementText && (
+        <div className="bg-gradient-to-r from-[#ea580c] via-[#d97706] to-[#ea580c] text-white text-xs font-bold py-2 px-4 text-center shadow-xs">
+          <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-center gap-2">
+            <Sparkles className="w-3.5 h-3.5 shrink-0" />
+            <span>{announcementText}</span>
+            <button
+              type="button"
+              onClick={() => onOpenEnquiry()}
+              className="underline font-black ml-2 cursor-pointer hover:text-slate-900"
+            >
+              Book Now →
+            </button>
+          </div>
+        </div>
+      )}
 
-      {/* 5 Distinct Disciplines / Categories with Color Codes (Blue, Green, Red, Pink, Orange) */}
-      <CategoryShowcase 
-        categories={categories}
-        onSelectCategory={onExplore}
-      />
+      {/* Hero Banner with Dynamic Cost Estimator */}
+      <div className={showAnnouncement ? "-mt-16" : ""}>
+        <HeroBanner 
+          categories={categories}
+          config={config}
+          onOpenEnquiry={onOpenEnquiry}
+          onExplore={onExplore}
+        />
+      </div>
+
+      {/* 5 Distinct Disciplines / Categories with Color Codes */}
+      {showCategoryShowcase && (
+        <CategoryShowcase 
+          categories={categories}
+          onSelectCategory={onExplore}
+        />
+      )}
 
       {/* Featured Projects Gallery with Approximate Costs */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -87,65 +119,67 @@ export const HomePage: React.FC<HomePageProps> = ({
       </section>
 
       {/* Veyra's Construction & Interiors Engineering Quality Standard */}
-      <section className="bg-white py-16 border-y border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
-          <div className="text-center max-w-2xl mx-auto mb-14">
-            <span className="text-xs font-bold uppercase tracking-widest text-[#059669] bg-emerald-50 px-3 py-1 rounded-sm border border-emerald-200">
-              Turnkey Excellence
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-2 font-sans">
-              Why Homeowners & Architects Choose Veyra's
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-500 mt-1">
-              Complete civil construction and interior fitouts governed by strict ISO-grade quality benchmarks.
-            </p>
+      {showQualitySection && (
+        <section className="bg-white py-16 border-y border-slate-200">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <div className="text-center max-w-2xl mx-auto mb-14">
+              <span className="text-xs font-bold uppercase tracking-widest text-[#059669] bg-emerald-50 px-3 py-1 rounded-sm border border-emerald-200">
+                Turnkey Excellence
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-2 font-sans">
+                Why Homeowners & Architects Choose Veyra's
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-500 mt-1">
+                Complete civil construction and interior fitouts governed by strict ISO-grade quality benchmarks.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className="p-6 bg-slate-50 rounded-sm border border-slate-200">
+                <div className="w-10 h-10 rounded-sm bg-[#1e3a8a] text-white flex items-center justify-center mb-4">
+                  <ShieldCheck className="w-5 h-5" />
+                </div>
+                <h4 className="font-bold text-slate-900 text-sm mb-1.5">Structural Safety Guarantee</h4>
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  FEA structural calculations and soil-tested RCC foundation design for lifetime durability.
+                </p>
+              </div>
+
+              <div className="p-6 bg-slate-50 rounded-sm border border-slate-200">
+                <div className="w-10 h-10 rounded-sm bg-[#059669] text-white flex items-center justify-center mb-4">
+                  <Ruler className="w-5 h-5" />
+                </div>
+                <h4 className="font-bold text-slate-900 text-sm mb-1.5">3D Photoreal Visualization</h4>
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  Experience full 4K architectural renders and virtual walkthroughs before physical ground-breaking.
+                </p>
+              </div>
+
+              <div className="p-6 bg-slate-50 rounded-sm border border-slate-200">
+                <div className="w-10 h-10 rounded-sm bg-[#ea580c] text-white flex items-center justify-center mb-4">
+                  <Award className="w-5 h-5" />
+                </div>
+                <h4 className="font-bold text-slate-900 text-sm mb-1.5">Premium Verified Materials</h4>
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  Imported Italian marbles, treated teakwood composites, and premium German architectural fittings.
+                </p>
+              </div>
+
+              <div className="p-6 bg-slate-50 rounded-sm border border-slate-200">
+                <div className="w-10 h-10 rounded-sm bg-[#db2777] text-white flex items-center justify-center mb-4">
+                  <CheckCircle className="w-5 h-5" />
+                </div>
+                <h4 className="font-bold text-slate-900 text-sm mb-1.5">On-Time Handover Penalty</h4>
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  Fixed contractual completion timelines backed by escrow-aligned milestone delivery.
+                </p>
+              </div>
+            </div>
+
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="p-6 bg-slate-50 rounded-sm border border-slate-200">
-              <div className="w-10 h-10 rounded-sm bg-[#1e3a8a] text-white flex items-center justify-center mb-4">
-                <ShieldCheck className="w-5 h-5" />
-              </div>
-              <h4 className="font-bold text-slate-900 text-sm mb-1.5">Structural Safety Guarantee</h4>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                FEA structural calculations and soil-tested RCC foundation design for lifetime durability.
-              </p>
-            </div>
-
-            <div className="p-6 bg-slate-50 rounded-sm border border-slate-200">
-              <div className="w-10 h-10 rounded-sm bg-[#059669] text-white flex items-center justify-center mb-4">
-                <Ruler className="w-5 h-5" />
-              </div>
-              <h4 className="font-bold text-slate-900 text-sm mb-1.5">3D Photoreal Visualization</h4>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                Experience full 4K architectural renders and virtual walkthroughs before physical ground-breaking.
-              </p>
-            </div>
-
-            <div className="p-6 bg-slate-50 rounded-sm border border-slate-200">
-              <div className="w-10 h-10 rounded-sm bg-[#ea580c] text-white flex items-center justify-center mb-4">
-                <Award className="w-5 h-5" />
-              </div>
-              <h4 className="font-bold text-slate-900 text-sm mb-1.5">Premium Verified Materials</h4>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                Imported Italian marbles, treated teakwood composites, and premium German architectural fittings.
-              </p>
-            </div>
-
-            <div className="p-6 bg-slate-50 rounded-sm border border-slate-200">
-              <div className="w-10 h-10 rounded-sm bg-[#db2777] text-white flex items-center justify-center mb-4">
-                <CheckCircle className="w-5 h-5" />
-              </div>
-              <h4 className="font-bold text-slate-900 text-sm mb-1.5">On-Time Handover Penalty</h4>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                Fixed contractual completion timelines backed by escrow-aligned milestone delivery.
-              </p>
-            </div>
-          </div>
-
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Direct WhatsApp Call to Action Banner */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

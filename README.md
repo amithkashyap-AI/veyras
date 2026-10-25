@@ -13,7 +13,7 @@
 
 **Veyra's Construction and Interiors** is an enterprise-grade full-stack portal built with modern web technologies and local AI intelligence. It delivers end-to-end management of architectural construction, interior design, timber patio spaces, customer enquiries, dynamic services management, and social media AI intelligence.
 
-- **Corporate Office**: `#98, 1Main, 4th Cross, Manjunatha Nagar, Rajajinagar-560010, Bengaluru, Karnataka`
+- **Corporate Office**: `#98, 1st Main, 4th Cross, Manjunatha Nagar, Rajajinagar, Bengaluru - 560010, Karnataka`
 - **Contact / WhatsApp**: `089213 36363`
 - **Email**: `contact@veyrasinteriors.com`
 - **Engineered & Maintained by**: **AalgoLabs (OPC) PVT. LTD.**

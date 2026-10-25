@@ -1,4 +1,23 @@
-import { Category, Project, Enquiry, CompanySetting, DashboardStats, AuthUser, Review, SystemConfig, Service, NavMenu, NavSubmenu, SocialMediaPost, OllamaStatus, AiAnalysisResponse } from '../types';
+import {
+  Category,
+  Project,
+  Enquiry,
+  CompanySetting,
+  DashboardStats,
+  AuthUser,
+  Review,
+  SystemConfig,
+  Service,
+  NavMenu,
+  NavSubmenu,
+  SocialMediaPost,
+  OllamaStatus,
+  AiAnalysisResponse,
+  AiAnalysisLog,
+  AdCampaign,
+  AdCampaignSummary,
+  ExecutiveReportSummary
+} from '../types';
 
 const API_BASE = '/api';
 
@@ -135,7 +154,8 @@ export const api = {
     const data = await res.json();
     return data.data;
   },
-  // Authentication (Email OTP & Password)
+
+  // Authentication & Admin Profile / Password
   async sendOtp(email: string): Promise<{ success: boolean; message: string; otp?: string; email: string }> {
     const res = await fetch(`${API_BASE}/auth/send-otp`, {
       method: "POST",
@@ -214,7 +234,41 @@ export const api = {
     return res.json();
   },
 
-  // System Configuration (Email SMTP, Payment Gateway, SEO)
+  async getAdminProfile(email = "admin@veyrasinteriors.com"): Promise<AuthUser> {
+    const res = await fetch(`${API_BASE}/auth/admin-profile?email=${encodeURIComponent(email)}`);
+    if (!res.ok) throw new Error("Failed to fetch admin profile");
+    const json = await res.json();
+    return json.data;
+  },
+
+  async updateAdminProfile(data: Partial<AuthUser> & { currentEmail?: string }): Promise<AuthUser> {
+    const res = await fetch(`${API_BASE}/auth/admin-profile`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || "Failed to update admin profile");
+    }
+    const json = await res.json();
+    return json.data;
+  },
+
+  async changeAdminPassword(data: { email?: string; currentPassword?: string; newPassword: string }): Promise<{ success: boolean; message: string }> {
+    const res = await fetch(`${API_BASE}/auth/admin-change-password`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || "Failed to change admin password");
+    }
+    return res.json();
+  },
+
+  // System Configuration (Email SMTP, Payment Gateway, SEO, WhatsApp, API Keys, Frontend CMS)
   async getConfig(): Promise<SystemConfig> {
     const res = await fetch(`${API_BASE}/config`);
     if (!res.ok) throw new Error("Failed to fetch system config");
@@ -231,6 +285,26 @@ export const api = {
     if (!res.ok) throw new Error("Failed to update system config");
     const data = await res.json();
     return data.data;
+  },
+
+  async testSmtpConfig(recipient?: string): Promise<{ success: boolean; message: string }> {
+    const res = await fetch(`${API_BASE}/config/test-smtp`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ recipient })
+    });
+    if (!res.ok) throw new Error("Failed to test SMTP");
+    return res.json();
+  },
+
+  async testWhatsAppConfig(phone?: string): Promise<{ success: boolean; message: string }> {
+    const res = await fetch(`${API_BASE}/config/test-whatsapp`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone })
+    });
+    if (!res.ok) throw new Error("Failed to test WhatsApp API");
+    return res.json();
   },
 
   // Reviews / Comments / Ratings
@@ -358,7 +432,7 @@ export const api = {
     return data.data;
   },
 
-  async createMenu(data: { title: string; icon?: string; order?: number }): Promise<NavMenu> {
+  async createMenu(data: { title: string; icon?: string; order?: number; isActive?: boolean }): Promise<NavMenu> {
     const res = await fetch(`${API_BASE}/menus`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -387,13 +461,24 @@ export const api = {
     if (!res.ok) throw new Error("Failed to delete menu");
   },
 
-  async createSubmenu(menuId: string, data: { title: string; description?: string; order?: number }): Promise<NavSubmenu> {
+  async createSubmenu(menuId: string, data: { title: string; description?: string; order?: number; isActive?: boolean }): Promise<NavSubmenu> {
     const res = await fetch(`${API_BASE}/menus/${menuId}/submenus`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data)
     });
     if (!res.ok) throw new Error("Failed to create submenu");
+    const json = await res.json();
+    return json.data;
+  },
+
+  async updateSubmenu(id: string, data: Partial<NavSubmenu>): Promise<NavSubmenu> {
+    const res = await fetch(`${API_BASE}/menus/submenus/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) throw new Error("Failed to update submenu");
     const json = await res.json();
     return json.data;
   },
@@ -412,6 +497,13 @@ export const api = {
     const res = await fetch(`${API_BASE}/ollama/status`);
     if (!res.ok) throw new Error("Failed to check Ollama status");
     return res.json();
+  },
+
+  async getOllamaLogs(): Promise<AiAnalysisLog[]> {
+    const res = await fetch(`${API_BASE}/ollama/logs`);
+    if (!res.ok) throw new Error("Failed to fetch AI logs");
+    const json = await res.json();
+    return json.data;
   },
 
   async getSocialPosts(): Promise<SocialMediaPost[]> {
@@ -457,6 +549,56 @@ export const api = {
     return res.json();
   },
 
+  async analyzeExecutiveReportWithOllama(model = "llama3.2:3b"): Promise<AiAnalysisResponse> {
+    const res = await fetch(`${API_BASE}/ollama/analyze-report`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ model })
+    });
+    if (!res.ok) throw new Error("Failed to execute Ollama executive report analysis");
+    return res.json();
+  },
+
+  async analyzeUsersWithOllama(model = "llama3.2:3b"): Promise<AiAnalysisResponse> {
+    const res = await fetch(`${API_BASE}/ollama/analyze-users`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ model })
+    });
+    if (!res.ok) throw new Error("Failed to execute Ollama user analysis");
+    return res.json();
+  },
+
+  async generateAdWithOllama(params: {
+    platform: string;
+    targetService: string;
+    targetAudience: string;
+    objective: string;
+    dailyBudget: number;
+    model?: string;
+  }): Promise<{
+    success: boolean;
+    modelUsed: string;
+    adCopy: {
+      campaignName: string;
+      headline: string;
+      primaryText: string;
+      ctaText: string;
+      targetAudience: string;
+      targetLocations: string;
+      hashtags: string;
+      creativeTip: string;
+    };
+  }> {
+    const res = await fetch(`${API_BASE}/ollama/generate-ad`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(params)
+    });
+    if (!res.ok) throw new Error("Failed to generate ad copy with Ollama");
+    return res.json();
+  },
+
   async chatWithOllama(message: string, model = "llama3.2:3b"): Promise<{ success: boolean; reply: string; modelUsed: string }> {
     const res = await fetch(`${API_BASE}/ollama/chat`, {
       method: "POST",
@@ -466,4 +608,108 @@ export const api = {
     if (!res.ok) throw new Error("Failed to send message to Ollama");
     return res.json();
   },
+
+  // ==========================================
+  // Users, Roles & RBAC Management
+  // ==========================================
+  async getUsers(): Promise<AuthUser[]> {
+    const res = await fetch(`${API_BASE}/users`);
+    if (!res.ok) throw new Error("Failed to fetch users");
+    const json = await res.json();
+    return json.data;
+  },
+
+  async createUser(data: Partial<AuthUser> & { password?: string }): Promise<AuthUser> {
+    const res = await fetch(`${API_BASE}/users`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || "Failed to create user");
+    }
+    const json = await res.json();
+    return json.data;
+  },
+
+  async updateUser(id: string, data: Partial<AuthUser> & { newPassword?: string }): Promise<AuthUser> {
+    const res = await fetch(`${API_BASE}/users/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || "Failed to update user");
+    }
+    const json = await res.json();
+    return json.data;
+  },
+
+  async deleteUser(id: string): Promise<void> {
+    const res = await fetch(`${API_BASE}/users/${id}`, {
+      method: "DELETE"
+    });
+    if (!res.ok) throw new Error("Failed to delete user");
+  },
+
+  // ==========================================
+  // Facebook & Instagram Ad Campaigns
+  // ==========================================
+  async getAdCampaigns(): Promise<{ summary: AdCampaignSummary; data: AdCampaign[] }> {
+    const res = await fetch(`${API_BASE}/ads`);
+    if (!res.ok) throw new Error("Failed to fetch ad campaigns");
+    return res.json();
+  },
+
+  async createAdCampaign(data: Partial<AdCampaign>): Promise<AdCampaign> {
+    const res = await fetch(`${API_BASE}/ads`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || "Failed to create ad campaign");
+    }
+    const json = await res.json();
+    return json.data;
+  },
+
+  async updateAdCampaign(id: string, data: Partial<AdCampaign>): Promise<AdCampaign> {
+    const res = await fetch(`${API_BASE}/ads/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) throw new Error("Failed to update ad campaign");
+    const json = await res.json();
+    return json.data;
+  },
+
+  async simulateBoostAdCampaign(id: string): Promise<{ success: boolean; message: string; data: AdCampaign }> {
+    const res = await fetch(`${API_BASE}/ads/${id}/simulate-boost`, {
+      method: "POST"
+    });
+    if (!res.ok) throw new Error("Failed to sync ad delivery");
+    return res.json();
+  },
+
+  async deleteAdCampaign(id: string): Promise<void> {
+    const res = await fetch(`${API_BASE}/ads/${id}`, {
+      method: "DELETE"
+    });
+    if (!res.ok) throw new Error("Failed to delete ad campaign");
+  },
+
+  // ==========================================
+  // Executive Reports Summary
+  // ==========================================
+  async getReportsSummary(): Promise<ExecutiveReportSummary> {
+    const res = await fetch(`${API_BASE}/reports/summary`);
+    if (!res.ok) throw new Error("Failed to fetch executive reports summary");
+    const json = await res.json();
+    return json.data;
+  }
 };

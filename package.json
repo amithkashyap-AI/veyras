@@ -5,8 +5,9 @@
   "private": true,
   "scripts": {
     "install:all": "npm install && npm --prefix server install && npm --prefix client install",
+    "predev": "sh -c 'lsof -ti:5080,5180 | xargs kill -9 2>/dev/null || true'",
     "dev": "concurrently -n \"SERVER,CLIENT\" -c \"magenta,cyan\" \"npm run dev:server\" \"npm run dev:client\"",
-    "dev:client": "npm --prefix client run dev",
+    "dev:client": "npm --prefix client run dev -- --host 0.0.0.0 --port 5180 --strictPort",
     "dev:server": "npm --prefix server run dev",
     "build": "npm --prefix client run build && npm --prefix server run build",
     "db:setup": "npm --prefix server run db:setup",

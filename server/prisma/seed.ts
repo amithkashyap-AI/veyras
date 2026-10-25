@@ -21,7 +21,7 @@ async function main() {
       phone: '089213 36363',
       whatsapp: '089213 36363',
       email: 'contact@veyrasinteriors.com',
-      address: '#98, 1Main , 4th Cross , Manjunatha Nagar, Rajainagar-560010, Bengaluru, Karnataka',
+      address: '#98, 1st Main, 4th Cross, Manjunatha Nagar, Rajajinagar, Bengaluru - 560010',
       city: 'Bengaluru',
       workingHours: 'Mon - Sat: 9:00 AM - 7:30 PM',
       logoUrl: '/assets/branding/veyras-logo.jpg'

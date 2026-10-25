@@ -48,8 +48,8 @@ companyRouter.put('/', async (req, res) => {
         phone: body.phone || '089213 36363',
         whatsapp: body.whatsapp || '089213 36363',
         email: body.email || 'contact@veyrasinteriors.com',
-        address: body.address || '#98, 1Main , 4th Cross , Manjunatha Nagar, Rajainagar-560010, Bengaluru, Karnataka',
-        city: body.city || 'Hyderabad'
+        address: body.address || '#98, 1st Main, 4th Cross, Manjunatha Nagar, Rajajinagar, Bengaluru - 560010',
+        city: body.city || 'Bengaluru'
       }
     });
 

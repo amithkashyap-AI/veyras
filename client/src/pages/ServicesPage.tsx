@@ -43,7 +43,7 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({
 
   const phone = company?.phone || "089213 36363";
   const whatsapp = company?.whatsapp || "089213 36363";
-  const address = company?.address || "#98, 1Main , 4th Cross , Manjunatha Nagar, Rajainagar-560010, Bengaluru, Karnataka";
+  const address = company?.address || "#98, 1st Main, 4th Cross, Manjunatha Nagar, Rajajinagar, Bengaluru - 560010";
 
   useEffect(() => {
     const fetchData = async () => {
@@ -163,14 +163,14 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({
 
           {/* Submenus shortcuts */}
           {menus.length > 0 && (
-            <div className="mt-4 pt-3 border-t border-slate-100 flex flex-wrap items-center gap-2 text-[11px] text-slate-600">
+            <div className="mt-4 pt-3 border-t border-slate-100 flex flex-wrap items-center gap-2 text-sm text-slate-600">
               <span className="font-bold text-slate-900 flex items-center gap-1">
                 <Filter className="w-3 h-3 text-[#ea580c]" /> Disciplines:
               </span>
               {menus.map((m) => (
                 <div key={m.id} className="inline-flex items-center gap-1 bg-slate-50 border border-slate-200 px-2 py-0.5 rounded-xs">
                   <span className="font-semibold text-[#1e3a8a]">{m.title}</span>
-                  <span className="text-[10px] text-slate-400">({m.submenus ? m.submenus.length : 0})</span>
+                  <span className="text-xs text-slate-400">({m.submenus ? m.submenus.length : 0})</span>
                 </div>
               ))}
             </div>
@@ -245,13 +245,13 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({
                     />
                     
                     {/* Category pill */}
-                    <div className="absolute top-3 left-3 bg-[#1e3a8a]/90 backdrop-blur-xs text-white px-2.5 py-1 rounded-xs text-[10px] font-black uppercase tracking-wider shadow-sm">
+                    <div className="absolute top-3 left-3 bg-[#1e3a8a]/90 backdrop-blur-xs text-white px-2.5 py-1 rounded-xs text-xs font-black uppercase tracking-wider shadow-sm">
                       {service.category}
                     </div>
 
                     {/* Submenu tag if available */}
                     {service.submenu && (
-                      <div className="absolute top-3 right-3 bg-white/95 text-slate-800 px-2.5 py-1 rounded-xs text-[10px] font-bold border border-slate-200 shadow-sm">
+                      <div className="absolute top-3 right-3 bg-white/95 text-slate-800 px-2.5 py-1 rounded-xs text-xs font-bold border border-slate-200 shadow-sm">
                         {service.submenu.title}
                       </div>
                     )}
@@ -259,7 +259,7 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({
                     {/* Prominent Price Tag Banner */}
                     <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-4 flex items-end justify-between">
                       <div>
-                        <span className="text-[10px] uppercase font-bold text-slate-300 block">
+                        <span className="text-xs uppercase font-bold text-slate-300 block">
                           Turnkey Rate
                         </span>
                         <div className="flex items-baseline gap-1 text-white">
@@ -273,8 +273,8 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({
                       </div>
 
                       {service.durationWeeks && (
-                        <div className="text-right text-[11px] text-slate-300 font-medium">
-                          <span className="block text-[9px] uppercase tracking-wider text-slate-400">Duration</span>
+                        <div className="text-right text-sm text-slate-300 font-medium">
+                          <span className="block text-xs uppercase tracking-wider text-slate-400">Duration</span>
                           <span>{service.durationWeeks} Weeks</span>
                         </div>
                       )}
@@ -301,14 +301,14 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({
                       {/* Inclusions / Highlights */}
                       {service.features && service.features.length > 0 && (
                         <div className="mt-4 pt-3 border-t border-slate-100">
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-2">
+                          <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-2">
                             Package Inclusions:
                           </span>
                           <ul className="space-y-1.5 text-xs text-slate-700">
                             {service.features.slice(0, 4).map((feat, idx) => (
                               <li key={idx} className="flex items-start gap-2">
                                 <Check className="w-3.5 h-3.5 text-[#059669] shrink-0 mt-0.5" />
-                                <span className="text-[11px] font-medium leading-snug">{feat}</span>
+                                <span className="text-sm font-medium leading-snug">{feat}</span>
                               </li>
                             ))}
                           </ul>
@@ -367,7 +367,7 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
             
             <div className="lg:col-span-1">
-              <span className="text-[10px] font-bold tracking-widest text-[#ea580c] uppercase">
+              <span className="text-xs font-bold tracking-widest text-[#ea580c] uppercase">
                 Interactive Cost Estimator
               </span>
               <h3 className="text-xl sm:text-2xl font-black mt-1">
@@ -380,7 +380,7 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({
 
             <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
               <div>
-                <label className="block text-[11px] font-bold uppercase text-slate-300 mb-1">
+                <label className="block text-sm font-bold uppercase text-slate-300 mb-1">
                   Select Package
                 </label>
                 <select
@@ -397,7 +397,7 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold uppercase text-slate-300 mb-1">
+                <label className="block text-sm font-bold uppercase text-slate-300 mb-1">
                   Area (Sq. Ft)
                 </label>
                 <input 
@@ -411,7 +411,7 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({
               </div>
 
               <div className="bg-white/10 p-3 rounded-sm border border-white/15 text-center">
-                <span className="text-[10px] uppercase font-bold text-slate-300 block">
+                <span className="text-xs uppercase font-bold text-slate-300 block">
                   Approx. Turnkey Cost
                 </span>
                 <span className="text-xl sm:text-2xl font-black text-[#f97316]">
@@ -424,7 +424,7 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({
                     areaSqFt: calcArea,
                     approxPrice: "₹" + calculatedEstimate.toLocaleString("en-IN")
                   })}
-                  className="mt-1 text-[10px] font-bold text-white hover:text-[#38bdf8] underline block mx-auto cursor-pointer"
+                  className="mt-1 text-xs font-bold text-white hover:text-[#38bdf8] underline block mx-auto cursor-pointer"
                 >
                   Book Site Visit with Estimate →
                 </button>
